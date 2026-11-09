@@ -1,0 +1,37 @@
+MIT License
+
+Copyright (c) 2026 Amit Shrivastava
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---------------------------------------------------------------------------
+Scope: the MIT licence above covers the code in this repository
+(make_3d.py, web/viewer_template.html, web/entry.js, web/build_bundle.sh, tools/).
+
+Not covered:
+- web/three-bundle.min.js is a build of three.js (MIT, Copyright 2010-2026
+  three.js authors, https://github.com/mrdoob/three.js).
+- examples/car.jpg is "1975 AMC Pacer base model at 2012 Rockville e" by
+  CZmarlin (Christopher Ziemnowicz), dedicated to the public domain under
+  CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/), source
+  https://commons.wikimedia.org/wiki/File:1975_AMC_Pacer_base_model_at_2012_Rockville_e.jpg
+  No permission is needed, but the author asks for a photo credit, so the
+  renders in assets/ keep one.
+- The Depth Anything V2 Small weights are downloaded at run time from
+  Hugging Face and are under their own licence (Apache-2.0 for the Small model).

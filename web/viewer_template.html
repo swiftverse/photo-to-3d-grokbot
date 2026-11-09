@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: __BG__; font-family: system-ui, sans-serif; }
+  canvas { display: block; touch-action: none; }
+  #hud { position: fixed; left: 12px; bottom: 10px; color: #fff; font-size: 13px; text-shadow: 0 1px 3px #000; opacity: .85; pointer-events: none; }
+  #hud.hidden { display: none; }
+</style>
+</head>
+<body>
+<div id="hud">Drag to orbit &middot; scroll / pinch to zoom &middot; right-drag to pan &middot; double-click to reset<br>__CREDIT__</div>
+<script>__THREE_BUNDLE__</script>
+<script>
+(function () {
+  const CFG = __CONFIG__;
+  const GLB_B64 = "__GLB_B64__";
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  document.body.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(CFG.bg);
+  const camera = new THREE.PerspectiveCamera(CFG.vfov, window.innerWidth / window.innerHeight, 0.05, 100);
+  camera.position.set(0, 0, 0);
+
+  const target = new THREE.Vector3(0, 0, -CFG.targetDepth);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.copy(target);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.rotateSpeed = 0.25;
+  controls.minAzimuthAngle = -CFG.maxYaw; controls.maxAzimuthAngle = CFG.maxYaw;
+  controls.minPolarAngle = Math.PI / 2 - CFG.maxPitch; controls.maxPolarAngle = Math.PI / 2 + CFG.maxPitch;
+  controls.minDistance = CFG.targetDepth * 0.35; controls.maxDistance = CFG.targetDepth * 1.15;
+  controls.update();
+
+  // Fit the vertical FOV so the photo fills the window at any aspect ratio.
+  function fitFov() {
+    const aspect = window.innerWidth / window.innerHeight;
+    const tanH = Math.tan(CFG.hfovImage / 2) * CFG.margin;
+    const tanV = Math.tan(CFG.vfovImage / 2) * CFG.margin;
+    const tv = Math.min(tanV, tanH / aspect);
+    camera.fov = 2 * Math.atan(tv) * 180 / Math.PI;
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix();
+  }
+  fitFov();
+
+  const bytes = Uint8Array.from(atob(GLB_B64), c => c.charCodeAt(0));
+  new GLTFLoader().parse(bytes.buffer, '', (gltf) => {
+    gltf.scene.traverse((o) => {
+      if (o.isMesh) {
+        const map = o.material.map;
+        if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 4; }
+        o.material = new THREE.MeshBasicMaterial({ map: map, side: THREE.DoubleSide });
+      }
+    });
+    scene.add(gltf.scene);
+    window.__ready = true;
+  }, (err) => { console.error(err); document.getElementById('hud').textContent = 'Failed to load model: ' + err; });
+
+  // Scripted camera path used for the video render: t in [0, 1] loops seamlessly.
+  window.setView = function (t) {
+    const a = 2 * Math.PI * t;
+    const yaw = CFG.pathYaw * Math.sin(a);
+    const pitch = CFG.pathPitch * Math.sin(2 * a);
+    const dist = CFG.targetDepth * (1 - CFG.pathDolly * (0.5 - 0.5 * Math.cos(a)));
+    camera.position.set(
+      target.x + dist * Math.sin(yaw) * Math.cos(pitch),
+      target.y + dist * Math.sin(pitch),
+      target.z + dist * Math.cos(yaw) * Math.cos(pitch));
+    camera.lookAt(target);
+    renderer.render(scene, camera);
+  };
+  window.hideHud = function () { document.getElementById('hud').classList.add('hidden'); };
+
+  renderer.domElement.addEventListener('dblclick', () => {
+    camera.position.set(0, 0, 0); controls.target.copy(target); controls.update();
+  });
+  window.addEventListener('resize', () => { renderer.setSize(window.innerWidth, window.innerHeight); fitFov(); });
+
+  (function loop() {
+    if (!window.__scripted) { controls.update(); renderer.render(scene, camera); }
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>

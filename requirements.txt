@@ -1,0 +1,12 @@
+# CPU-only PyTorch wheels (much smaller than the default CUDA build on Linux).
+# Remove this line if you want a GPU build of torch.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.4
+transformers>=4.45
+numpy>=1.26
+pillow>=10.0
+opencv-python-headless>=4.9
+trimesh>=4.0
+imageio>=2.34
+imageio-ffmpeg>=0.5
+playwright>=1.45
