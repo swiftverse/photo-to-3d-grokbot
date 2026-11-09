@@ -1,0 +1,29 @@
+# generated output
+out/
+*.mp4
+*.glb
+*.npy
+viewer.html
+report.json
+*.log
+
+# model weights and caches
+.cache/
+hf_cache/
+huggingface/
+*.safetensors
+*.pt
+*.pth
+*.onnx
+__pycache__/
+*.pyc
+.venv/
+venv/
+web/node_modules/
+web/package.json
+web/package-lock.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
